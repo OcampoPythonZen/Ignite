@@ -16,12 +16,12 @@ class Calorie(models.Model):
 
 
     def __str__(self):
-        return f'Calories{self.calories} {self.unity}'
+        return f'Calories {self.calories} {self.unity}'
 
 class Ingredient(models.Model):
     """Model to define the ingredents per pizza, relationship M:1 with pizza
     """
-    calorie = models.OneToOneField(Calorie,on_delete=models.CASCADE,pimary_key=True) #Relationship 1:1 with Calorie
+    calorie = models.OneToOneField(Calorie,on_delete=models.CASCADE,primary_key=True) #Relationship 1:1 with Calorie
     created_at = models.DateTimeField(auto_now = False, auto_now_add = True, null = True)
     updated_at = models.DateTimeField(auto_now = True, auto_now_add = False, null = True)
     is_active = models.BooleanField(default = True)
@@ -29,7 +29,7 @@ class Ingredient(models.Model):
     description = models.CharField(max_length=50)
 
     def __str__(self):
-        return f'Ingredent{self.ingredient_name}'
+        return f'Ingredent {self.ingredient_name} with {self.calorie} calories.'
 
 class Pizza(models.Model):
     """Model to define the name of every pizza to show. relationship 1:M with ingredients
@@ -42,5 +42,5 @@ class Pizza(models.Model):
     description = models.CharField(max_length=50)
 
     def __str__(self):
-        return f'Pizza name:{self.pizza_name}'
+        return f'Pizza {self.pizza_name.capitalize()}'
 
