@@ -1,46 +1,72 @@
 from django.db import models
+from django.urls import reverse
+from decimal import Decimal
+import decimal
+
+#Format to use with decimal numbers
+quantity = Decimal('0.01')
 
 # Create your models here.
-class Calorie(models.Model):
-    """Model to define the calories per ingredient, relationship 1:1 with Ingredent
+class Customer(models.Model):
+    """Create a customer profile to order pizza.
     """
-    UNITS_USED = (
-        ('cal','cal'),
-        ('kcal','kcal')
-    )
+    customer_name = models.CharField(max_length=50)
+    phone_number = models.CharField(max_length=10)
+    address = models.CharField(max_length=90)
+    
+    def __str__(self):
+        return f'Cliente {self.customer_name}'
+        
+    def get_absolute_url(self):
+        return reverse("root")
 
-    created_at = models.DateTimeField(auto_now = False, auto_now_add = True, null = True)
-    updated_at = models.DateTimeField(auto_now = True, auto_now_add = False, null = True)
-    calories = models.FloatField(max_length=4)
-    unity = models.CharField('Unidad de medida:', max_length=5, choices=UNITS_USED)
-
+class Size(models.Model):
+    """Pizza sizes to know the price.
+    """
+    size_name = models.CharField(max_length=30)
+    price_size = models.DecimalField(default=0.00,decimal_places=2,max_digits=4)
 
     def __str__(self):
-        return f'Calories {self.calories} {self.unity}'
+        return f'Tamaño {self.size_name}'
 
-class Ingredient(models.Model):
-    """Model to define the ingredents per pizza, relationship M:1 with pizza
+class Topping(models.Model):
+    """Ingredient or topping into a pizza.
     """
-    calorie = models.OneToOneField(Calorie,on_delete=models.CASCADE,primary_key=True) #Relationship 1:1 with Calorie
-    created_at = models.DateTimeField(auto_now = False, auto_now_add = True, null = True)
-    updated_at = models.DateTimeField(auto_now = True, auto_now_add = False, null = True)
-    is_active = models.BooleanField(default = True)
-    ingredient_name = models.CharField(max_length=30)
-    description = models.CharField(max_length=50)
-
+    topping_name = models.CharField(max_length=30)
+    price_topping = models.DecimalField(default=1.00,decimal_places=2,max_digits=4)
+    
     def __str__(self):
-        return f'Ingredent {self.ingredient_name} with {self.calorie} calories.'
+        return f'Ingrediente {self.topping_name}'
 
 class Pizza(models.Model):
-    """Model to define the name of every pizza to show. relationship 1:M with ingredients
+    """Pizza name to show customer
     """
-    ingredients = models.ForeignKey(Ingredient,models.CASCADE)
-    created_at = models.DateTimeField(auto_now = False, auto_now_add = True, null = True)
-    updated_at = models.DateTimeField(auto_now = True, auto_now_add = False, null = True)
-    is_active = models.BooleanField(default = True)
-    pizza_name = models.CharField(max_length=30)
-    description = models.CharField(max_length=50)
+    size = models.ForeignKey(Size,on_delete=models.CASCADE)
+    toppings = models.ManyToManyField(Topping)
+    price_pizza = models.DecimalField(default=0.00,decimal_places=2,max_digits=4)
+    order_by = models.ForeignKey(Customer,on_delete=models.CASCADE)
+    
+    def save(self,*args,**kwargs):
+        if not Pizza.objects.filter(id=self.id):
+            super().save(*args,**kwargs)
+        else:
+            price = Decimal('0.00')
+            if self.size:
+                price = self.size.price_size
+                print(price)
+                for topping in toppings.all():
+                    if topping.price_topping:
+                        price =+ topping.price_topping
+            self.price_pizza = decimal.Decimal(str(price)).quantize(quantity)
+            print(price)
+            super().save(*args,**kwargs)
 
     def __str__(self):
-        return f'Pizza {self.pizza_name.capitalize()}'
-
+        if self.size.size_name:
+            name = 'Pizza de tamaño ' + self.size.size_name
+        else:
+            name = 'Pizza'
+        for topping in self.toppings.all():
+            if topping.topping_name:
+                name = name + ', ' + topping.topping_name
+        return name
