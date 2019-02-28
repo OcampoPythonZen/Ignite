@@ -70,3 +70,33 @@ class Pizza(models.Model):
             if topping.topping_name:
                 name = name + ', ' + topping.topping_name
         return name
+
+class Order(models.Model):
+    created_at = models.DateTimeField(auto_now = False, auto_now_add = True, null = True)
+    updated_at = models.DateTimeField(auto_now = True, auto_now_add = False, null = True)
+    customer = models.ForeignKey(Customer, on_delete=models.CASCADE)
+    pizzas = models.ManyToManyField(Pizza, blank=True)
+    subtotal = models.DecimalField(max_digits=6,decimal_places=2,default=0.00)
+    total = models.DecimalField(max_digits=6,decimal_places=2,default=0.00)
+    is_finished = models.BooleanField(default=False)
+
+    def save(self,*args,**kwargs):
+        if not Order.objects.filter(id=self.id):
+            super().save(*args,**kwargs)
+        else:
+            decimal.getcontext().rounding = decimal.ROUND_HALF_EVEN
+            self.subtotal = Decimal('0.00')
+            for pizza in self.pizzas.all():
+                self.subtotal += pizza.price_pizza
+                for topping in self.pizza.toppings.all():
+                    self.subtotal += topping.price_topping
+            if self.subtotal < 30.00:
+                self.total = self.subtotal + 8.00
+            self.total = self.total.quantize(quantity)
+            super().save(*args,**kwargs)
+
+    def __str__(self):
+        return f'ID: {self.id}'
+
+    def get_absolute_url(self):
+        return reverse("nuevo_cliente",kwargs={'pk':self.id})
