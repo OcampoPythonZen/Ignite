@@ -33,11 +33,12 @@ class Topping(models.Model):
     """Ingredient or topping into a pizza.
     """
     UNIT_USED = (
-        (cal,cal),
-        (kcal,kcal),
+        ('cal','cal'),
+        ('kcal','kcal'),
     )
     topping_name = models.CharField(max_length=30)
-    calories = 
+    calories = models.FloatField(default=0.00)
+    unit = models.CharField('Unidades',max_length=5,choices=UNIT_USED,default=0.00)
     price_topping = models.DecimalField(default=1.00,decimal_places=2,max_digits=4)
 
     
