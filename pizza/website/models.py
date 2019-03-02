@@ -18,7 +18,7 @@ class Customer(models.Model):
         return f'Cliente {self.customer_name}'
         
     def get_absolute_url(self):
-        return reverse("root")
+        return reverse("eocampo")
 
 class Size(models.Model):
     """Pizza sizes to know the price.
@@ -32,8 +32,14 @@ class Size(models.Model):
 class Topping(models.Model):
     """Ingredient or topping into a pizza.
     """
+    UNIT_USED = (
+        (cal,cal),
+        (kcal,kcal),
+    )
     topping_name = models.CharField(max_length=30)
+    calories = 
     price_topping = models.DecimalField(default=1.00,decimal_places=2,max_digits=4)
+
     
     def __str__(self):
         return f'Ingrediente {self.topping_name}'
