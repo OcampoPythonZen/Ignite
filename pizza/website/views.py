@@ -1,11 +1,12 @@
 from django.shortcuts import render
-from django.views.generic import TemplateView, CreateView
-from website import models
+from .forms import ToppingForm, PizzaForm, OrderForm
 
-# Create your views here.
-class HomeView(TemplateView):
-    template_name = 'website/home_view.html'
+def home(request):
+	template_name = 'website/home_view.html'
+	context = {}
+	return render(request, template_name, context=context)
 
-class NewOrderView(CreateView):
-	model = models.Order
-	fields = ('pizzas','is_finished')
+def order(request):
+	form = OrderForm()
+	template_name = 'website/order_form.html'
+	return render(request, template_name, {'form':form})

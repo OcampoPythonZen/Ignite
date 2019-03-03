@@ -1,8 +1,7 @@
-from django.urls import (path, include)
-from .views import HomeView
-from website.views import NewOrderView
+from django.urls import path, include
+from website.views import home, order
 
 urlpatterns = [
-    path('',HomeView.as_view()),
-    path('new/',NewOrderView.as_view(),name='Nueva Orden')
+    path('',home),
+    path('new/',order),
 ]

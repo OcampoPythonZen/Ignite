@@ -17,14 +17,14 @@ class Customer(models.Model):
     def __str__(self):
         return f'Cliente {self.customer_name}'
         
-    def get_absolute_url(self):
-        return reverse("eocampo")
+    # def get_absolute_url(self):
+    #     return reverse("eocampo")
 
 class Size(models.Model):
     """Pizza sizes to know the price.
     """
     size_name = models.CharField(max_length=30)
-    price_size = models.DecimalField(default=0.00,decimal_places=2,max_digits=4)
+    price_size = models.DecimalField(default=0.00,decimal_places=2,max_digits=8)
 
     def __str__(self):
         return f'Tamaño {self.size_name}'
@@ -43,67 +43,68 @@ class Topping(models.Model):
 
     
     def __str__(self):
-        return f'Ingrediente {self.topping_name}'
+        return f'Ingrediente {self.topping_name} con {self.calories}-{self.unit}'
 
 class Pizza(models.Model):
     """Pizza name to show customer
     """
+    pizza_name = models.CharField(default='Nombre de la pizza', max_length=30)
     size = models.ForeignKey(Size,on_delete=models.CASCADE)
     toppings = models.ManyToManyField(Topping)
-    price_pizza = models.DecimalField(default=0.00,decimal_places=2,max_digits=4)
-    order_by = models.ForeignKey(Customer,on_delete=models.CASCADE)
+    price_pizza = models.DecimalField(default=0.00,decimal_places=2,max_digits=8)
     
-    def save(self,*args,**kwargs):
-        if not Pizza.objects.filter(id=self.id):
-            super().save(*args,**kwargs)
-        else:
-            price = Decimal('0.00')
-            if self.size:
-                price = self.size.price_size
-                print(price)
-                for topping in toppings.all():
-                    if topping.price_topping:
-                        price =+ topping.price_topping
-            self.price_pizza = decimal.Decimal(str(price)).quantize(quantity)
-            print(price)
-            super().save(*args,**kwargs)
+    # def save(self,*args,**kwargs):
+    #     if not Pizza.objects.filter(id=self.id):
+    #         super().save(*args,**kwargs)
+    #     else:
+    #         price = Decimal('0.00')
+    #         if self.size:
+    #             price
+    #  = self.size.price_size
+    #             print(price)
+    #             for topping in toppings.all():
+    #                 if topping.price_topping:
+    #                     price =+ topping.price_topping
+    #         self.price_pizza = decimal.Decimal(str(price)).quantize(quantity)
+    #         print(price)
+    #         super().save(*args,**kwargs)
 
     def __str__(self):
         if self.size.size_name:
-            name = 'Pizza de tamaño ' + self.size.size_name
+            name = 'Pizza ' + self.size.size_name
         else:
-            name = 'Pizza'
+            name = self.pizza_name
         for topping in self.toppings.all():
             if topping.topping_name:
-                name = name + ', ' + topping.topping_name
+                name = name + ' -' + topping.topping_name
         return name
 
 class Order(models.Model):
     created_at = models.DateTimeField(auto_now = False, auto_now_add = True, null = True)
     updated_at = models.DateTimeField(auto_now = True, auto_now_add = False, null = True)
-    customer = models.ForeignKey(Customer, on_delete=models.CASCADE)
+    #customer = models.ForeignKey(Customer, on_delete=models.CASCADE)
     pizzas = models.ManyToManyField(Pizza, blank=True)
-    subtotal = models.DecimalField(max_digits=6,decimal_places=2,default=0.00)
-    total = models.DecimalField(max_digits=6,decimal_places=2,default=0.00)
+    subtotal = models.DecimalField(max_digits=8,decimal_places=2,default=0.00)
+    total = models.DecimalField(max_digits=8,decimal_places=2,default=0.00)
     is_finished = models.BooleanField(default=False)
 
-    def save(self,*args,**kwargs):
-        if not Order.objects.filter(id=self.id):
-            super().save(*args,**kwargs)
-        else:
-            decimal.getcontext().rounding = decimal.ROUND_HALF_EVEN
-            self.subtotal = Decimal('0.00')
-            for pizza in self.pizzas.all():
-                self.subtotal += pizza.price_pizza
-                for topping in self.pizza.toppings.all():
-                    self.subtotal += topping.price_topping
-            if self.subtotal < 30.00:
-                self.total = self.subtotal + 8.00
-            self.total = self.total.quantize(quantity)
-            super().save(*args,**kwargs)
+    # def save(self,*args,**kwargs):
+    #     if not Order.objects.filter(id=self.id):
+    #         super().save(*args,**kwargs)
+    #     else:
+    #         decimal.getcontext().rounding = decimal.ROUND_HALF_EVEN
+    #         self.subtotal = Decimal('0.00')
+    #         for pizza in self.pizzas.all():
+    #             self.subtotal += pizza.price_pizza
+    #             for topping in self.pizza.toppings.all():
+    #                 self.subtotal += topping.price_topping
+    #         if self.subtotal < 30.00:
+    #             self.total = self.subtotal + 8.00
+    #         self.total = self.total.quantize(quantity)
+    #         super().save(*args,**kwargs)
 
     def __str__(self):
-        return f'ID: {self.id}'
+        return f'ID: {self.id}-{self.created_at}'
 
-    def get_absolute_url(self):
-        return reverse("nuevo_cliente",kwargs={'pk':self.id})
+    # def get_absolute_url(self):
+    #     return reverse("nuevo_cliente",kwargs={'pk':self.id})
