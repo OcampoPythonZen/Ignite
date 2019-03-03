@@ -1,6 +1,5 @@
 {% extends 'base.html' %}
 {% load static %}
-{% include 'navbar.html' %}
 {% block content %}
 <div class="container">
   <img src="{% static 'img/pizza.jpg' %}" alt="Pizzas Ignite" class="img-fluid"><br><br>
@@ -9,5 +8,4 @@
   <p>Only when the button is clicked, the navigation bar will be displayed.</p>
   <p>Tip: You can also remove the .navbar-expand-md class to ALWAYS hide navbar links and display the toggler button.</p>
 </div>
-{% endblock content %}
-{% include 'footer.html' %}
+{% endblock %}
