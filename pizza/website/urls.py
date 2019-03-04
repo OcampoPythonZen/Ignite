@@ -3,7 +3,7 @@ from website.views import home, order, pizza, topping
 
 urlpatterns = [
     path('',home),
-    path('new/',order),
-    path('pizza/',pizza),
-    path('topping/',topping),
+    path('new/',order, name='orden'),
+    path('pizza/',pizza,name='pizza'),
+    path('topping/',topping,name='topping'),
 ]
